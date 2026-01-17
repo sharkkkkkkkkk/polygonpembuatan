@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import api from '@/lib/api';
+import { supabase } from '@/lib/supabase';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -329,47 +330,56 @@ export default function Kelola() {
                                         onChange={e => setBlogData({ ...blogData, content: e.target.value })}
                                     />
                                 </div>
-                                <Button className="w-full" onClick={() => {
-                                    const newPost = {
-                                        slug: blogData.slug,
-                                        title: blogData.title,
-                                        excerpt: blogData.excerpt,
-                                        date: new Date().toISOString().split('T')[0],
-                                        author: blogData.author,
-                                        keywords: blogData.keywords,
-                                        content: blogData.content
-                                    };
-                                    const json = JSON.stringify(newPost, null, 4);
-                                    setGeneratedJson(json + ","); // Add comma for array easy pasting
-                                    toast({ title: "Generated!", description: "JSON code ready to copy." });
+                                <Button className="w-full" onClick={async () => {
+                                    if (!blogData.title || !blogData.content) {
+                                        toast({ title: "Error", description: "Title and Content are required", variant: "destructive" });
+                                        return;
+                                    }
+
+                                    try {
+                                        const { data, error } = await supabase
+                                            .from('articles')
+                                            .insert([
+                                                {
+                                                    slug: blogData.slug,
+                                                    title: blogData.title,
+                                                    excerpt: blogData.excerpt,
+                                                    author: blogData.author,
+                                                    keywords: blogData.keywords,
+                                                    content: blogData.content,
+                                                    is_published: true
+                                                }
+                                            ])
+                                            .select();
+
+                                        if (error) throw error;
+
+                                        toast({ title: "Success!", description: "Article published to database." });
+                                        // Reset form
+                                        setBlogData({ title: '', slug: '', excerpt: '', author: 'Admin', keywords: '', content: '' });
+                                    } catch (error) {
+                                        console.error(error);
+                                        toast({ title: "Error", description: error.message || "Failed to save article", variant: "destructive" });
+                                    }
                                 }}>
-                                    <Coins className="w-4 h-4 mr-2" /> Generate Code
+                                    <Check className="w-4 h-4 mr-2" /> Publish Article
                                 </Button>
                             </CardContent>
                         </Card>
 
                         <Card className="h-full flex flex-col">
                             <CardHeader>
-                                <CardTitle>Output Code</CardTitle>
+                                <CardTitle>Recent Articles (Database)</CardTitle>
                                 <CardDescription>
-                                    Copy this code and append it to <code>client/src/data/blog_posts.js</code>
+                                    List of articles currently live on Supabase.
                                 </CardDescription>
                             </CardHeader>
-                            <CardContent className="flex-1 bg-slate-950 text-slate-50 p-4 rounded-b-xl overflow-auto font-mono text-xs relative group">
-                                <pre>{generatedJson || "// Fill form and click Generate..."}</pre>
-                                {generatedJson && (
-                                    <Button
-                                        size="sm"
-                                        variant="secondary"
-                                        className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity"
-                                        onClick={() => {
-                                            navigator.clipboard.writeText(generatedJson);
-                                            toast({ title: "Copied!", description: "Paste this into the blog_posts.js file." });
-                                        }}
-                                    >
-                                        <Copy className="w-4 h-4 mr-2" /> Copy
-                                    </Button>
-                                )}
+                            <CardContent className="flex-1 overflow-auto">
+                                <div className="text-sm text-muted-foreground p-4 text-center border rounded-lg border-dashed">
+                                    Refresh page to see latest articles list here...
+                                    <br />
+                                    (Connect your Supabase credentials in .env first)
+                                </div>
                             </CardContent>
                         </Card>
                     </div>
