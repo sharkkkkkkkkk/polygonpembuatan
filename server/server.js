@@ -180,7 +180,13 @@ app.use((err, req, res, next) => {
     res.status(500).json({ error: 'Terjadi kesalahan server' });
 });
 
-app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-    console.log(`[SECURITY] Admin panel tersedia di /api/kelola`);
-});
+// Conditional listen for local development
+if (process.env.NODE_ENV !== 'production' && require.main === module) {
+    app.listen(PORT, () => {
+        console.log(`Server running on port ${PORT}`);
+        console.log(`[SECURITY] Admin panel tersedia di /api/kelola`);
+    });
+}
+
+// Export app for Vercel
+module.exports = app;

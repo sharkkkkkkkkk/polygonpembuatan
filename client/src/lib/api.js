@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-    baseURL: 'http://localhost:5000/api', // Hardcoded for now
+    baseURL: '/api', // Relative path to work with proxy (dev) and Vercel rewrites (prod)
 });
 
 api.interceptors.request.use((config) => {
