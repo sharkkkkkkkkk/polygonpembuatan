@@ -1,15 +1,41 @@
 import { useParams, Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import ReactMarkdown from 'react-markdown';
-import blogPosts from '@/data/blog_posts';
+// import blogPosts from '@/data/blog_posts'; // Remove static import
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Calendar, User, ArrowLeft, Share2 } from 'lucide-react';
+import { Calendar, User, ArrowLeft, Share2, Loader2 } from 'lucide-react';
 import Footer from '@/components/Footer';
+import { supabase } from '@/lib/supabase';
+import { useState, useEffect } from 'react';
 
 export default function BlogPost() {
     const { slug } = useParams();
-    const post = blogPosts.find(p => p.slug === slug);
+    const [post, setPost] = useState(null);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchPost = async () => {
+            const { data, error } = await supabase
+                .from('articles')
+                .select('*')
+                .eq('slug', slug)
+                .single();
+
+            if (data) setPost(data);
+            setLoading(false);
+        };
+        fetchPost();
+    }, [slug]);
+
+    if (loading) {
+        return (
+            <div className="min-h-screen flex flex-col items-center justify-center gap-4">
+                <Loader2 className="w-8 h-8 animate-spin text-primary" />
+                <p className="text-muted-foreground">Memuat artikel...</p>
+            </div>
+        );
+    }
 
     if (!post) {
         return (
@@ -91,7 +117,7 @@ export default function BlogPost() {
                         </div>
                         <div className="flex items-center gap-2">
                             <Calendar className="w-4 h-4" />
-                            <span>{new Date(post.date).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
+                            <span>{new Date(post.created_at || post.date).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
                         </div>
                     </div>
                 </header>
