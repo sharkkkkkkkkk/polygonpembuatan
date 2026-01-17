@@ -8,6 +8,7 @@ import Footer from '@/components/Footer';
 import { CheckCircle2, Map, Zap, Shield, Loader2, Coins } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
 import { KABUPATEN_JAWA } from '@/data/locations';
+import { MONEY_KEYWORDS, TECHNICAL_KEYWORDS, PROFESSIONAL_KEYWORDS, LONG_TAIL_KEYWORDS } from '@/data/seo_keywords';
 
 export default function Landing() {
     const { login, register, user } = useAuth();
@@ -36,10 +37,16 @@ export default function Landing() {
     return (
         <div className="flex flex-col min-h-screen bg-background text-foreground overflow-x-hidden">
             <Helmet>
-                <title>Jasa Pembuatan Polygon GIS Otomatis - Seluruh Indonesia</title>
-                <meta name="description" content="Jasa pembuatan polygon GIS otomatis dan cepat. Download shapefile (.shp) presisi tinggi untuk seluruh kabupaten di Jawa dan Indonesia. Layanan pemetaan profesional." />
-                <meta name="keywords" content={`jasa pembuatan polygon, polygon gis, shapefile otomatis, ${KABUPATEN_JAWA.map(k => `jasa pembuatan polygon ${k.toLowerCase()}`).join(', ')}`} />
-                <link rel="canonical" href="https://linesima.com/" />
+                <title>Buat Polygon NIB OSS & Peta Tanah Online | SHP Generator Gratis - LineSima</title>
+                <meta name="description" content="Gagal upload peta di OSS? Buat file Polygon (.shp) untuk NIB dan Izin Lokasi (KKPR) secara instan. Cukup tempel Link Google Maps, langsung jadi file ZIP Shapefile siap upload. Coba gratis sekarang!" />
+                <meta name="keywords" content={[
+                    ...MONEY_KEYWORDS,
+                    ...TECHNICAL_KEYWORDS,
+                    ...PROFESSIONAL_KEYWORDS,
+                    ...LONG_TAIL_KEYWORDS,
+                    ...KABUPATEN_JAWA.map(k => `jasa pembuatan polygon ${k.toLowerCase()}`)
+                ].join(', ')} />
+                <link rel="canonical" href="https://pembuatanpolygon.site/" />
             </Helmet>
 
             {/* Navbar */}
@@ -81,11 +88,11 @@ export default function Landing() {
                         </div>
                         <h1 className="text-4xl font-extrabold tracking-tight lg:text-6xl">
                             Pembuatan <br />
-                            <span className="bg-gradient-to-r from-blue-600 to-green-500 bg-clip-text text-transparent">POLYGON</span>
+                            <span className="bg-gradient-to-r from-blue-600 to-green-500 bg-clip-text text-transparent">POLYGON NIB OSS</span>
                         </h1>
                         <p className="text-xl text-muted-foreground max-w-lg">
-                            Generasi Polygon GIS gratis dari koordinat Lat/Long.
-                            Unduh Shapefile (.shp) presisi tinggi dalam hitungan detik menggunakan sistem token.
+                            Gagal upload peta di OSS? Buat file Polygon (.shp) untuk NIB dan Izin Lokasi (KKPR) secara instan.
+                            Cukup tempel Link Google Maps, langsung jadi file ZIP siap upload.
                         </p>
                         <div className="flex flex-col sm:flex-row gap-4 pt-4">
                             <Button size="xl" className="h-12 px-8 text-lg" onClick={() => {
