@@ -6,6 +6,8 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import PaymentModal from '@/components/PaymentModal';
 import Footer from '@/components/Footer';
 import { CheckCircle2, Map, Zap, Shield, Loader2, Coins } from 'lucide-react';
+import { Helmet } from 'react-helmet-async';
+import { KABUPATEN_JAWA } from '@/data/locations';
 
 export default function Landing() {
     const { login, register, user } = useAuth();
@@ -33,6 +35,12 @@ export default function Landing() {
 
     return (
         <div className="flex flex-col min-h-screen bg-background text-foreground overflow-x-hidden">
+            <Helmet>
+                <title>Jasa Pembuatan Polygon GIS Otomatis - Seluruh Indonesia</title>
+                <meta name="description" content="Jasa pembuatan polygon GIS otomatis dan cepat. Download shapefile (.shp) presisi tinggi untuk seluruh kabupaten di Jawa dan Indonesia. Layanan pemetaan profesional." />
+                <meta name="keywords" content={`jasa pembuatan polygon, polygon gis, shapefile otomatis, ${KABUPATEN_JAWA.map(k => `jasa pembuatan polygon ${k.toLowerCase()}`).join(', ')}`} />
+                <link rel="canonical" href="https://linesima.com/" />
+            </Helmet>
 
             {/* Navbar */}
             <nav className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
@@ -289,6 +297,20 @@ export default function Landing() {
                                 </div>
                             </div>
                         </div>
+                    </div>
+                </div>
+            </section>
+
+            {/* SEO Locations Section */}
+            <section className="py-12 bg-muted/20 border-t">
+                <div className="container px-4">
+                    <h2 className="text-2xl font-bold mb-8 text-center">Jangkauan Layanan Kami</h2>
+                    <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-2 text-xs text-muted-foreground">
+                        {KABUPATEN_JAWA.map((kab, index) => (
+                            <div key={index} className="hover:text-primary transition-colors cursor-default">
+                                Jasa Pembuatan Polygon {kab}
+                            </div>
+                        ))}
                     </div>
                 </div>
             </section>
