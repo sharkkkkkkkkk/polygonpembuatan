@@ -253,14 +253,21 @@ export default function Dashboard() {
                     <div className="w-8 h-8 rounded bg-primary"></div>
                     LineSima
                 </div>
-                <div className="flex items-center gap-4">
-                    <div className="text-sm font-medium bg-secondary px-4 py-2 rounded-full">
-                        Balance: <span className="text-primary font-bold">{user?.token_balance} Tokens</span>
+                <div className="flex items-center gap-2 sm:gap-4">
+                    <div className="text-sm font-medium bg-secondary px-3 py-1.5 sm:px-4 sm:py-2 rounded-full flex items-center gap-2">
+                        <span className="hidden sm:inline">Balance:</span>
+                        <span className="text-primary font-bold">{user?.token_balance} <span className="hidden sm:inline">Tokens</span></span>
                     </div>
                     <PaymentModal>
-                        <Button size="sm">Get Tokens</Button>
+                        <Button size="sm" className="px-2 sm:px-4">{/* Desktop: Get Tokens, Mobile: + */}
+                            <span className="hidden sm:inline">Get Tokens</span>
+                            <span className="sm:hidden text-lg leading-none">+</span>
+                        </Button>
                     </PaymentModal>
-                    <Button variant="ghost" size="sm" onClick={logout}>Logout</Button>
+                    <Button variant="ghost" size="sm" onClick={logout} className="px-2 sm:px-4">
+                        <span className="hidden sm:inline">Logout</span>
+                        <span className="sm:hidden">Log</span>
+                    </Button>
                 </div>
             </header>
 
@@ -332,7 +339,7 @@ export default function Dashboard() {
                 </Card>
 
                 {/* Map Preview */}
-                <Card ref={mapContainerRef} className="lg:col-span-2 overflow-hidden h-[500px] lg:h-auto relative">
+                <Card ref={mapContainerRef} className="lg:col-span-2 overflow-hidden h-[400px] sm:h-[500px] lg:h-auto relative min-h-[400px]">
                     <MapContainer center={mapCenter} zoom={13} style={{ height: "100%", width: "100%" }}>
                         <TileLayer
                             attribution='&copy; <a href="https://www.google.com/intl/en-US_US/help/terms_maps.html">Google</a>'

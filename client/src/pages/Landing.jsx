@@ -1,11 +1,11 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import PaymentModal from '@/components/PaymentModal';
 import Footer from '@/components/Footer';
-import { CheckCircle2, Map, Zap, Shield, Loader2, Coins } from 'lucide-react';
+import { CheckCircle2, Map, Zap, Shield, Loader2, Coins, Menu, X } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
 import { KABUPATEN_JAWA } from '@/data/locations';
 import { MONEY_KEYWORDS, TECHNICAL_KEYWORDS, PROFESSIONAL_KEYWORDS, LONG_TAIL_KEYWORDS } from '@/data/seo_keywords';
@@ -16,6 +16,16 @@ export default function Landing() {
     const [isLoading, setIsLoading] = useState(false);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+    // Close menu when resizing to desktop
+    useEffect(() => {
+        const handleResize = () => {
+            if (window.innerWidth >= 768) setIsMenuOpen(false);
+        };
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -56,7 +66,9 @@ export default function Landing() {
                         <img src="/assets/logo.svg" alt="Logo" className="w-8 h-8" />
                         <span>LineSima</span>
                     </div>
-                    <div className="flex gap-4">
+
+                    {/* Desktop Menu */}
+                    <div className="hidden md:flex gap-4">
                         <Button variant="outline" asChild className="mr-2">
                             <a href="/payment">Cara Pembayaran</a>
                         </Button>
@@ -71,7 +83,33 @@ export default function Landing() {
                             </>
                         )}
                     </div>
+
+                    {/* Mobile Menu Button */}
+                    <button className="md:hidden p-2" onClick={() => setIsMenuOpen(!isMenuOpen)}>
+                        {isMenuOpen ? <X /> : <Menu />}
+                    </button>
                 </div>
+
+                {/* Mobile Menu Dropdown */}
+                {isMenuOpen && (
+                    <div className="md:hidden border-t p-4 bg-background absolute w-full shadow-lg flex flex-col gap-4 animate-in slide-in-from-top-5">
+                        <Button variant="outline" asChild className="w-full justify-start">
+                            <a href="/payment">Cara Pembayaran</a>
+                        </Button>
+                        {user ? (
+                            <Button asChild className="w-full">
+                                <a href="/dashboard">Dashboard</a>
+                            </Button>
+                        ) : (
+                            <>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <Button variant="ghost" onClick={() => { setIsLogin(true); setIsMenuOpen(false); }}>Masuk</Button>
+                                    <Button onClick={() => { setIsLogin(false); setIsMenuOpen(false); }}>Mulai Sekarang</Button>
+                                </div>
+                            </>
+                        )}
+                    </div>
+                )}
             </nav>
 
             {/* Hero Section */}
@@ -95,7 +133,7 @@ export default function Landing() {
                             Cukup tempel Link Google Maps, langsung jadi file ZIP siap upload.
                         </p>
                         <div className="flex flex-col sm:flex-row gap-4 pt-4">
-                            <Button size="xl" className="h-12 px-8 text-lg" onClick={() => {
+                            <Button size="xl" className="h-12 px-8 text-lg w-full sm:w-auto" onClick={() => {
                                 if (user) {
                                     window.location.href = '/dashboard';
                                 } else {
@@ -105,12 +143,12 @@ export default function Landing() {
                             }}>
                                 Mulai Generate
                             </Button>
-                            <Button variant="outline" size="xl" className="h-12 px-8 text-lg">
+                            <Button variant="outline" size="xl" className="h-12 px-8 text-lg w-full sm:w-auto">
                                 Dokumentasi
                             </Button>
                         </div>
 
-                        <div className="pt-8 flex items-center gap-8 text-sm text-muted-foreground">
+                        <div className="pt-8 flex flex-wrap items-center gap-4 sm:gap-8 text-sm text-muted-foreground">
                             <div className="flex items-center gap-2">
                                 <CheckCircle2 className="w-4 h-4 text-green-500" />
                                 <span>Standar ESRI</span>
