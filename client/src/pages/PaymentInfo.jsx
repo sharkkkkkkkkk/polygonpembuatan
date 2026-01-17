@@ -9,7 +9,7 @@ export default function PaymentPage() {
             <nav className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
                 <div className="container flex h-16 items-center justify-between px-4">
                     <div className="font-bold text-xl flex items-center gap-2">
-                        <img src="/src/assets/logo.svg" alt="Logo" className="w-8 h-8" />
+                        <img src="/assets/logo.svg" alt="Logo" className="w-8 h-8" />
                         <span>LineSima</span>
                     </div>
                     <div className="flex gap-4">
@@ -39,7 +39,7 @@ export default function PaymentPage() {
                                     <div className="flex flex-col md:flex-row gap-8">
                                         <div className="bg-white p-4 rounded-lg inline-block w-fit">
                                             {/* Placeholder QRIS - User will replace this */}
-                                            <img src="/src/assets/qris.jpg" className="w-80 h-auto object-contain" alt="Scan QRIS Disini" />
+                                            <img src="/assets/qris.jpg" className="w-80 h-auto object-contain" alt="Scan QRIS Disini" />
                                         </div>
                                         <div className="space-y-2 text-slate-300 flex-1">
                                             <p>Scan kode QRIS di samping menggunakan aplikasi e-wallet atau mobile banking favorit Anda (GoPay, OVO, Dana, ShopeePay, BCA Mobile, dll).</p>

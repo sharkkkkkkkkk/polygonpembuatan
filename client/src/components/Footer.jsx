@@ -7,7 +7,7 @@ export default function Footer() {
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
                     <div className="space-y-4">
                         <div className="flex items-center gap-2 font-bold text-xl">
-                            <img src="/src/assets/logo.svg" alt="Logo" className="w-8 h-8" />
+                            <img src="/assets/logo.svg" alt="Logo" className="w-8 h-8" />
                             <span>LineSima</span>
                         </div>
                         <p className="text-sm text-muted-foreground">
