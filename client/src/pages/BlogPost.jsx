@@ -1,7 +1,6 @@
 import { useParams, Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import ReactMarkdown from 'react-markdown';
-import rehypeRaw from 'rehype-raw';
 import blogPosts from '@/data/blog_posts';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -98,7 +97,7 @@ export default function BlogPost() {
                 </header>
 
                 <div className="prose prose-lg prose-slate dark:prose-invert max-w-none">
-                    <ReactMarkdown rehypePlugins={[rehypeRaw]}>
+                    <ReactMarkdown>
                         {post.content}
                     </ReactMarkdown>
                 </div>

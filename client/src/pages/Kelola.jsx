@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogDescription } from '@/components/ui/dialog';
 import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/components/ui/use-toast';
-import { Users, Coins, PlusCircle, Search, Trash2, ArrowUpRight, ArrowDownLeft } from 'lucide-react';
+import { Users, Coins, PlusCircle, Search, Trash2, ArrowUpRight, ArrowDownLeft, FileText, Copy, Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export default function Kelola() {
@@ -26,6 +26,11 @@ export default function Kelola() {
     const [selectedUser, setSelectedUser] = useState(null);
     const [tokenAmount, setTokenAmount] = useState(0);
     const [tokenAction, setTokenAction] = useState('add');
+
+    // Blog SEO State
+    const [activeTab, setActiveTab] = useState('users');
+    const [blogData, setBlogData] = useState({ title: '', slug: '', excerpt: '', author: 'Admin', keywords: '', content: '' });
+    const [generatedJson, setGeneratedJson] = useState('');
 
     useEffect(() => {
         fetchUsers();
@@ -126,119 +131,249 @@ export default function Kelola() {
                     </Card>
                 </div>
 
-                {/* Actions Bar */}
-                <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
-                    <div className="relative w-full md:w-96">
-                        <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                        <Input
-                            placeholder="Search by Name, Email or WhatsApp..."
-                            className="pl-8 bg-white"
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                        />
-                    </div>
+                {/* Navigation Tabs */}
+                <div className="flex gap-2 border-b pb-1">
+                    <Button
+                        variant={activeTab === 'users' ? 'default' : 'ghost'}
+                        onClick={() => setActiveTab('users')}
+                        className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary"
+                        data-state={activeTab === 'users' ? 'active' : ''}
+                    >
+                        <Users className="w-4 h-4 mr-2" /> User Management
+                    </Button>
+                    <Button
+                        variant={activeTab === 'seo' ? 'default' : 'ghost'}
+                        onClick={() => setActiveTab('seo')}
+                        className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary"
+                        data-state={activeTab === 'seo' ? 'active' : ''}
+                    >
+                        <FileText className="w-4 h-4 mr-2" /> Blog & SEO Tool
+                    </Button>
+                </div>
 
-                    <Dialog open={newUserOpen} onOpenChange={setNewUserOpen}>
-                        <DialogTrigger asChild>
-                            <Button className="gap-2 bg-blue-600 hover:bg-blue-700">
-                                <PlusCircle className="h-4 w-4" /> Add User Manually
-                            </Button>
-                        </DialogTrigger>
-                        <DialogContent>
-                            <DialogHeader>
-                                <DialogTitle>Add New User</DialogTitle>
-                                <DialogDescription>Create a user account manually.</DialogDescription>
-                            </DialogHeader>
-                            <div className="space-y-4 py-4">
-                                <div className="space-y-2">
-                                    <Label>Full Name</Label>
-                                    <Input value={newData.name} onChange={e => setNewData({ ...newData, name: e.target.value })} placeholder="John Doe" />
+                {activeTab === 'users' ? (
+                    /* User Management Section */
+                    <div className="space-y-6">
+                        {/* Actions Bar */}
+                        <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
+                            <div className="relative w-full md:w-96">
+                                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                                <Input
+                                    placeholder="Search by Name, Email or WhatsApp..."
+                                    className="pl-8 bg-white"
+                                    value={searchTerm}
+                                    onChange={(e) => setSearchTerm(e.target.value)}
+                                />
+                            </div>
+
+                            <Dialog open={newUserOpen} onOpenChange={setNewUserOpen}>
+                                <DialogTrigger asChild>
+                                    <Button className="gap-2 bg-blue-600 hover:bg-blue-700">
+                                        <PlusCircle className="h-4 w-4" /> Add User Manually
+                                    </Button>
+                                </DialogTrigger>
+                                <DialogContent>
+                                    <DialogHeader>
+                                        <DialogTitle>Add New User</DialogTitle>
+                                        <DialogDescription>Create a user account manually.</DialogDescription>
+                                    </DialogHeader>
+                                    <div className="space-y-4 py-4">
+                                        <div className="space-y-2">
+                                            <Label>Full Name</Label>
+                                            <Input value={newData.name} onChange={e => setNewData({ ...newData, name: e.target.value })} placeholder="John Doe" />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label>WhatsApp Number</Label>
+                                            <Input value={newData.whatsapp} onChange={e => setNewData({ ...newData, whatsapp: e.target.value })} placeholder="62812..." />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label>Email</Label>
+                                            <Input value={newData.email} onChange={e => setNewData({ ...newData, email: e.target.value })} placeholder="email@example.com" />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label>Password</Label>
+                                            <div className="flex gap-2">
+                                                <Input value={newData.password} onChange={e => setNewData({ ...newData, password: e.target.value })} type="text" placeholder="Password" />
+                                                <Button type="button" variant="outline" onClick={() => {
+                                                    const randomPass = Math.random().toString(36).slice(-8) + Math.random().toString(36).slice(-8);
+                                                    setNewData({ ...newData, password: randomPass });
+                                                }}>Generate</Button>
+                                            </div>
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label>Initial Tokens</Label>
+                                            <Input type="number" value={newData.initialTokens} onChange={e => setNewData({ ...newData, initialTokens: e.target.value })} />
+                                        </div>
+                                    </div>
+                                    <DialogFooter className="gap-2 sm:justify-between">
+                                        <Button type="button" variant="secondary" onClick={() => {
+                                            const text = `Email: ${newData.email}\nPassword: ${newData.password}`;
+                                            navigator.clipboard.writeText(text);
+                                            toast({ title: "Copied!", description: "Credentials copied to clipboard." });
+                                        }}>
+                                            Copy Credentials
+                                        </Button>
+                                        <Button onClick={handleCreateUser}>Create User</Button>
+                                    </DialogFooter>
+                                </DialogContent>
+                            </Dialog>
+                        </div>
+
+                        {/* User Table */}
+                        <Card>
+                            <CardContent className="p-0">
+                                <div className="rounded-md border">
+                                    <table className="w-full text-sm text-left">
+                                        <thead className="bg-muted/50 text-muted-foreground font-medium">
+                                            <tr>
+                                                <th className="p-4">Name / Email</th>
+                                                <th className="p-4">WhatsApp</th>
+                                                <th className="p-4">Tokens</th>
+                                                <th className="p-4 text-right">Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {loading ? (
+                                                <tr><td colSpan="4" className="p-8 text-center">Loading users...</td></tr>
+                                            ) : filteredUsers.length === 0 ? (
+                                                <tr><td colSpan="4" className="p-8 text-center">No users found.</td></tr>
+                                            ) : (
+                                                filteredUsers.map((user) => (
+                                                    <tr key={user.id} className="border-t hover:bg-muted/30 transition-colors">
+                                                        <td className="p-4">
+                                                            <div className="font-medium text-foreground">{user.name || "No Name"}</div>
+                                                            <div className="text-muted-foreground text-xs">{user.email}</div>
+                                                        </td>
+                                                        <td className="p-4 font-mono">{user.whatsapp || "-"}</td>
+                                                        <td className="p-4">
+                                                            <div className={cn("inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium",
+                                                                user.token_balance > 0 ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800")}>
+                                                                {user.token_balance} Tokens
+                                                            </div>
+                                                        </td>
+                                                        <td className="p-4 text-right">
+                                                            <Button variant="outline" size="sm" onClick={() => {
+                                                                setSelectedUser(user);
+                                                                setTokenModalOpen(true);
+                                                            }}>
+                                                                Manage Tokens
+                                                            </Button>
+                                                        </td>
+                                                    </tr>
+                                                ))
+                                            )}
+                                        </tbody>
+                                    </table>
                                 </div>
+                            </CardContent>
+                        </Card>
+                    </div>
+                ) : (
+                    /* Blog SEO Tool Section */
+                    <div className="grid lg:grid-cols-2 gap-8">
+                        <Card>
+                            <CardHeader>
+                                <CardTitle>Create New Blog Post</CardTitle>
+                                <CardDescription>Fill in the details to generate SEO-optimized article data.</CardDescription>
+                            </CardHeader>
+                            <CardContent className="space-y-4">
                                 <div className="space-y-2">
-                                    <Label>WhatsApp Number</Label>
-                                    <Input value={newData.whatsapp} onChange={e => setNewData({ ...newData, whatsapp: e.target.value })} placeholder="62812..." />
+                                    <Label>Article Title</Label>
+                                    <Input
+                                        placeholder="e.g. Cara Mengurus NIB OSS"
+                                        value={blogData.title}
+                                        onChange={e => {
+                                            const title = e.target.value;
+                                            setBlogData({
+                                                ...blogData,
+                                                title,
+                                                // Auto-generate slug
+                                                slug: title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '')
+                                            });
+                                        }}
+                                    />
                                 </div>
-                                <div className="space-y-2">
-                                    <Label>Email</Label>
-                                    <Input value={newData.email} onChange={e => setNewData({ ...newData, email: e.target.value })} placeholder="email@example.com" />
-                                </div>
-                                <div className="space-y-2">
-                                    <Label>Password</Label>
-                                    <div className="flex gap-2">
-                                        <Input value={newData.password} onChange={e => setNewData({ ...newData, password: e.target.value })} type="text" placeholder="Password" />
-                                        <Button type="button" variant="outline" onClick={() => {
-                                            const randomPass = Math.random().toString(36).slice(-8) + Math.random().toString(36).slice(-8);
-                                            setNewData({ ...newData, password: randomPass });
-                                        }}>Generate</Button>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="space-y-2">
+                                        <Label>Slug (URL Friendly)</Label>
+                                        <Input value={blogData.slug} onChange={e => setBlogData({ ...blogData, slug: e.target.value })} />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label>Author</Label>
+                                        <Input value={blogData.author} onChange={e => setBlogData({ ...blogData, author: e.target.value })} />
                                     </div>
                                 </div>
                                 <div className="space-y-2">
-                                    <Label>Initial Tokens</Label>
-                                    <Input type="number" value={newData.initialTokens} onChange={e => setNewData({ ...newData, initialTokens: e.target.value })} />
+                                    <Label>Meta Keywords (Comma separated)</Label>
+                                    <Input
+                                        placeholder="nib, oss, peta digital, shapefile"
+                                        value={blogData.keywords}
+                                        onChange={e => setBlogData({ ...blogData, keywords: e.target.value })}
+                                    />
                                 </div>
-                            </div>
-                            <DialogFooter className="gap-2 sm:justify-between">
-                                <Button type="button" variant="secondary" onClick={() => {
-                                    const text = `Email: ${newData.email}\nPassword: ${newData.password}`;
-                                    navigator.clipboard.writeText(text);
-                                    toast({ title: "Copied!", description: "Credentials copied to clipboard." });
+                                <div className="space-y-2">
+                                    <Label>Excerpt (Meta Description)</Label>
+                                    <textarea
+                                        className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                        placeholder="Brief summary for Google connection..."
+                                        value={blogData.excerpt}
+                                        onChange={e => setBlogData({ ...blogData, excerpt: e.target.value })}
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label>Content (Markdown)</Label>
+                                    <textarea
+                                        className="flex min-h-[300px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 font-mono"
+                                        placeholder="## Heading 2&#10;Write your content using Markdown..."
+                                        value={blogData.content}
+                                        onChange={e => setBlogData({ ...blogData, content: e.target.value })}
+                                    />
+                                </div>
+                                <Button className="w-full" onClick={() => {
+                                    const newPost = {
+                                        slug: blogData.slug,
+                                        title: blogData.title,
+                                        excerpt: blogData.excerpt,
+                                        date: new Date().toISOString().split('T')[0],
+                                        author: blogData.author,
+                                        keywords: blogData.keywords,
+                                        content: blogData.content
+                                    };
+                                    const json = JSON.stringify(newPost, null, 4);
+                                    setGeneratedJson(json + ","); // Add comma for array easy pasting
+                                    toast({ title: "Generated!", description: "JSON code ready to copy." });
                                 }}>
-                                    Copy Credentials
+                                    <Coins className="w-4 h-4 mr-2" /> Generate Code
                                 </Button>
-                                <Button onClick={handleCreateUser}>Create User</Button>
-                            </DialogFooter>
-                        </DialogContent>
-                    </Dialog>
-                </div>
+                            </CardContent>
+                        </Card>
 
-                {/* User Table */}
-                <Card>
-                    <CardContent className="p-0">
-                        <div className="rounded-md border">
-                            <table className="w-full text-sm text-left">
-                                <thead className="bg-muted/50 text-muted-foreground font-medium">
-                                    <tr>
-                                        <th className="p-4">Name / Email</th>
-                                        <th className="p-4">WhatsApp</th>
-                                        <th className="p-4">Tokens</th>
-                                        <th className="p-4 text-right">Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {loading ? (
-                                        <tr><td colSpan="4" className="p-8 text-center">Loading users...</td></tr>
-                                    ) : filteredUsers.length === 0 ? (
-                                        <tr><td colSpan="4" className="p-8 text-center">No users found.</td></tr>
-                                    ) : (
-                                        filteredUsers.map((user) => (
-                                            <tr key={user.id} className="border-t hover:bg-muted/30 transition-colors">
-                                                <td className="p-4">
-                                                    <div className="font-medium text-foreground">{user.name || "No Name"}</div>
-                                                    <div className="text-muted-foreground text-xs">{user.email}</div>
-                                                </td>
-                                                <td className="p-4 font-mono">{user.whatsapp || "-"}</td>
-                                                <td className="p-4">
-                                                    <div className={cn("inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium",
-                                                        user.token_balance > 0 ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800")}>
-                                                        {user.token_balance} Tokens
-                                                    </div>
-                                                </td>
-                                                <td className="p-4 text-right">
-                                                    <Button variant="outline" size="sm" onClick={() => {
-                                                        setSelectedUser(user);
-                                                        setTokenModalOpen(true);
-                                                    }}>
-                                                        Manage Tokens
-                                                    </Button>
-                                                </td>
-                                            </tr>
-                                        ))
-                                    )}
-                                </tbody>
-                            </table>
-                        </div>
-                    </CardContent>
-                </Card>
+                        <Card className="h-full flex flex-col">
+                            <CardHeader>
+                                <CardTitle>Output Code</CardTitle>
+                                <CardDescription>
+                                    Copy this code and append it to <code>client/src/data/blog_posts.js</code>
+                                </CardDescription>
+                            </CardHeader>
+                            <CardContent className="flex-1 bg-slate-950 text-slate-50 p-4 rounded-b-xl overflow-auto font-mono text-xs relative group">
+                                <pre>{generatedJson || "// Fill form and click Generate..."}</pre>
+                                {generatedJson && (
+                                    <Button
+                                        size="sm"
+                                        variant="secondary"
+                                        className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity"
+                                        onClick={() => {
+                                            navigator.clipboard.writeText(generatedJson);
+                                            toast({ title: "Copied!", description: "Paste this into the blog_posts.js file." });
+                                        }}
+                                    >
+                                        <Copy className="w-4 h-4 mr-2" /> Copy
+                                    </Button>
+                                )}
+                            </CardContent>
+                        </Card>
+                    </div>
+                )}
 
                 {/* Token Management Modal */}
                 <Dialog open={tokenModalOpen} onOpenChange={setTokenModalOpen}>
