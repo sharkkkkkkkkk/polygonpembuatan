@@ -8,7 +8,11 @@ import Footer from '@/components/Footer';
 import { CheckCircle2, Map, Zap, Shield, Loader2, Coins, Menu, X } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
 import { KABUPATEN_JAWA } from '@/data/locations';
+import { Badge } from '@/components/ui/badge';
 import { MONEY_KEYWORDS, TECHNICAL_KEYWORDS, PROFESSIONAL_KEYWORDS, LONG_TAIL_KEYWORDS } from '@/data/seo_keywords';
+import blogPosts from '@/data/blog_posts';
+import { BookOpen } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 export default function Landing() {
     const { login, register, user } = useAuth();
@@ -344,6 +348,45 @@ export default function Landing() {
                                 </div>
                             </div>
                         </div>
+                    </div>
+                </div>
+            </section>
+
+            {/* Latest Articles / Blog Section */}
+            <section className="py-20 bg-background">
+                <div className="container px-4">
+                    <div className="text-center max-w-2xl mx-auto mb-16">
+                        <Badge className="mb-4">Blog & Tutorial</Badge>
+                        <h2 className="text-3xl font-bold tracking-tight mb-4">Panduan OSS & GIS Terbaru</h2>
+                        <p className="text-muted-foreground">
+                            Artikel pilihan untuk membantu Anda memahami teknis pembuatan peta polygon dan perizinan OSS.
+                        </p>
+                    </div>
+
+                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                        {blogPosts.map((post, index) => (
+                            <Link key={index} to={`/blog/${post.slug}`} className="group block h-full">
+                                <article className="bg-muted/30 border rounded-2xl overflow-hidden hover:shadow-lg transition-all h-full flex flex-col">
+                                    <div className="p-6 flex-1 flex flex-col">
+                                        <div className="text-xs font-semibold text-blue-600 mb-2 flex items-center gap-2">
+                                            <BookOpen className="w-3 h-3" />
+                                            Tutorial
+                                        </div>
+                                        <h3 className="text-xl font-bold mb-3 group-hover:text-blue-600 transition-colors line-clamp-2">
+                                            {post.title}
+                                        </h3>
+                                        <p className="text-muted-foreground text-sm line-clamp-3 mb-4 flex-1">
+                                            {post.excerpt}
+                                        </p>
+                                        <div className="flex items-center text-xs text-muted-foreground mt-auto pt-4 border-t">
+                                            <span>{post.author}</span>
+                                            <span className="mx-2">•</span>
+                                            <span>{new Date(post.date).toLocaleDateString()}</span>
+                                        </div>
+                                    </div>
+                                </article>
+                            </Link>
+                        ))}
                     </div>
                 </div>
             </section>

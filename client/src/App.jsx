@@ -6,6 +6,7 @@ import Landing from '@/pages/Landing';
 import Dashboard from '@/pages/Dashboard';
 import Kelola from '@/pages/Kelola';
 import PaymentInfo from '@/pages/PaymentInfo';
+import BlogPost from '@/pages/BlogPost';
 
 const PrivateRoute = ({ children }) => {
   const { user, loading } = useAuth();
@@ -28,6 +29,7 @@ function AppRoutes() {
       <Route path="/payment" element={<PaymentInfo />} />
       <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
       <Route path="/kelola" element={<AdminRoute><Kelola /></AdminRoute>} />
+      <Route path="/blog/:slug" element={<BlogPost />} />
     </Routes>
   );
 }
