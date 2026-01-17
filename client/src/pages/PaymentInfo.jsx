@@ -39,7 +39,7 @@ export default function PaymentPage() {
                                     <div className="flex flex-col md:flex-row gap-8">
                                         <div className="bg-white p-4 rounded-lg inline-block w-fit">
                                             {/* Placeholder QRIS - User will replace this */}
-                                            <img src="/assets/qrispay.jpg" className="w-80 h-auto object-contain" alt="Scan QRIS Disini" />
+                                            <img src={`/assets/qrispay.jpg?v=${new Date().getTime()}`} className="w-80 h-auto object-contain" alt="Scan QRIS Disini" />
                                         </div>
                                         <div className="space-y-2 text-slate-300 flex-1">
                                             <p>Scan kode QRIS di samping menggunakan aplikasi e-wallet atau mobile banking favorit Anda (GoPay, OVO, Dana, ShopeePay, BCA Mobile, dll).</p>
