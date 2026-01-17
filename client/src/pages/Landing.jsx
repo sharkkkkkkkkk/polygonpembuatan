@@ -143,8 +143,10 @@ export default function Landing() {
                             }}>
                                 Mulai Generate
                             </Button>
-                            <Button variant="outline" size="xl" className="h-12 px-8 text-lg w-full sm:w-auto">
-                                Dokumentasi
+                            <Button variant="outline" size="xl" className="h-12 px-8 text-lg w-full sm:w-auto" asChild>
+                                <a href="https://www.youtube.com/watch?v=3DpbXQSG0fY" target="_blank" rel="noopener noreferrer">
+                                    Dokumentasi
+                                </a>
                             </Button>
                         </div>
 
