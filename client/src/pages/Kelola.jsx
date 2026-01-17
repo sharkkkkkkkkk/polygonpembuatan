@@ -132,23 +132,20 @@ export default function Kelola() {
                     </Card>
                 </div>
 
-                {/* Navigation Tabs */}
-                <div className="flex gap-2 border-b pb-1">
+                <div className="flex justify-start gap-4 border-b w-full">
                     <Button
                         variant={activeTab === 'users' ? 'default' : 'ghost'}
                         onClick={() => setActiveTab('users')}
-                        className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary"
-                        data-state={activeTab === 'users' ? 'active' : ''}
+                        className={cn("rounded-none border-b-2 border-transparent px-8 py-6 text-lg", activeTab === 'users' && "border-primary")}
                     >
-                        <Users className="w-4 h-4 mr-2" /> User Management
+                        <Users className="w-5 h-5 mr-2" /> User Management
                     </Button>
                     <Button
                         variant={activeTab === 'seo' ? 'default' : 'ghost'}
                         onClick={() => setActiveTab('seo')}
-                        className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary"
-                        data-state={activeTab === 'seo' ? 'active' : ''}
+                        className={cn("rounded-none border-b-2 border-transparent px-8 py-6 text-lg", activeTab === 'seo' && "border-primary")}
                     >
-                        <FileText className="w-4 h-4 mr-2" /> Blog & SEO Tool
+                        <FileText className="w-5 h-5 mr-2" /> Blog & SEO Tool
                     </Button>
                 </div>
 
