@@ -32,7 +32,7 @@ function MapUpdater({ center, onMapReady }) {
 
     useEffect(() => {
         if (center) {
-            map.flyTo(center, 16);
+            map.flyTo(center, 19);
         }
     }, [center, map]);
     return null;
@@ -344,6 +344,7 @@ export default function Dashboard() {
                         <TileLayer
                             attribution='&copy; <a href="https://www.google.com/intl/en-US_US/help/terms_maps.html">Google</a>'
                             url="https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}"
+                            maxZoom={22}
                         />
                         <FeatureGroup ref={featureGroupRef}>
                             <EditControl
