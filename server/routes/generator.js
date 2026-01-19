@@ -1,7 +1,13 @@
 const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
+const { createClient } = require('@supabase/supabase-js');
 const archiver = require('archiver');
+
+// Initialize Supabase Client
+const supabaseUrl = process.env.SUPABASE_URL;
+const supabaseKey = process.env.SUPABASE_KEY;
+const supabase = createClient(supabaseUrl, supabaseKey);
 
 const DEG_TO_RAD = Math.PI / 180;
 
@@ -22,13 +28,26 @@ router.post('/create', verifyUser, async (req, res) => {
     if ((!lat || !lng || !area) && !customPoints) return res.status(400).json({ error: 'Missing parameters' });
 
     try {
+        console.log(`[Generator] Request from User: ${user_id}`);
+
         // 1. Check tokens
-        const { data: user } = await req.supabase.from('users').select('token_balance').eq('id', user_id).single();
-        if (!user || user.token_balance < 5) return res.status(403).json({ error: 'Insufficient tokens' });
+        const { data: user, error: userError } = await supabase.from('users').select('token_balance').eq('id', user_id).single();
+
+        if (userError) {
+            console.error('[Generator] DB Error:', userError);
+            throw new Error('Database error fetching user');
+        }
+
+        if (!user || user.token_balance < 5) {
+            return res.status(403).json({ error: 'Insufficient tokens' });
+        }
 
         // 2. Deduct tokens
-        const { error } = await req.supabase.from('users').update({ token_balance: user.token_balance - 5 }).eq('id', user_id);
-        if (error) throw error;
+        const { error: updateError } = await supabase.from('users').update({ token_balance: user.token_balance - 5 }).eq('id', user_id);
+        if (updateError) {
+            console.error('[Generator] Deduct Error:', updateError);
+            throw updateError;
+        }
 
         let points = [];
         let minX = 180, maxX = -180, minY = 90, maxY = -90;
@@ -87,7 +106,8 @@ router.post('/create', verifyUser, async (req, res) => {
         archive.finalize();
 
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        console.error('[Generator] Critical Error:', err);
+        res.status(500).json({ error: err.message || 'Server Generation Failed' });
     }
 });
 
