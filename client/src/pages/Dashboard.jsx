@@ -12,7 +12,7 @@ import 'leaflet/dist/leaflet.css';
 import 'leaflet-draw/dist/leaflet.draw.css';
 import L from 'leaflet';
 import PaymentModal from '@/components/PaymentModal';
-import { Download } from 'lucide-react';
+import { Download, Search } from 'lucide-react';
 
 // Fix Leaflet icons
 delete L.Icon.Default.prototype._getIconUrl;
