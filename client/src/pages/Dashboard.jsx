@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/components/ui/use-toast';
 import api from '@/lib/api';
-import { MapContainer, TileLayer, FeatureGroup, useMap } from 'react-leaflet';
+import { MapContainer, TileLayer, FeatureGroup, useMap, Marker, Popup } from 'react-leaflet';
 import { EditControl } from "react-leaflet-draw";
 import 'leaflet/dist/leaflet.css';
 import 'leaflet-draw/dist/leaflet.draw.css';
@@ -363,6 +363,11 @@ export default function Dashboard() {
                             />
                         </FeatureGroup>
                         <MapUpdater center={mapCenter} />
+                        {(lat && lng) && (
+                            <Marker position={[parseFloat(lat), parseFloat(lng)]}>
+                                <Popup>Lokasi Target</Popup>
+                            </Marker>
+                        )}
                     </MapContainer>
 
                     {/* Instructions Panel - Bottom Left (hidden on export) */}
