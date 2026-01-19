@@ -58,14 +58,46 @@ export default function Dashboard() {
     const handleSearch = async () => {
         if (!searchQuery) return;
         setIsSearching(true);
+        setSearchResults([]);
+
+        // Helper: Fetch from Nominatim
+        const fetchLocation = async (query) => {
+            const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=5&addressdetails=1`);
+            return await res.json();
+        };
+
         try {
-            const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(searchQuery)}&limit=5`);
-            const data = await response.json();
-            setSearchResults(data);
+            // 1. Attempt Exact Search
+            let data = await fetchLocation(searchQuery);
+
+            // 2. Fallback: If no results, clean the query (Remove RT/RW, Zip codes, potentially confusing terms)
             if (data.length === 0) {
-                toast({ title: "Tidak Ditemukan", description: "Lokasi tidak ditemukan, coba nama lain.", variant: "destructive" });
+                // Regex to remove RT/RW (e.g. RT.03, RW 04), Zip codes (5 digits), and specific keywords like "lapangan"
+                const cleanedQuery = searchQuery
+                    .replace(/(RT|RW)\.?\s*\d+(\s*\/\s*(RT|RW)\.?\s*\d+)?/gi, '') // Remove RT/RW
+                    .replace(/\b\d{5}\b/g, '') // Remove Zip Code
+                    .replace(/\b(lapangan|jalan|gang|blok|no\.|nomor)\b/gi, '') // Remove generic detail words
+                    .replace(/,\s*,/g, ',') // specific cleanup for double commas
+                    .trim();
+
+                if (cleanedQuery !== searchQuery) {
+                    // Toast info for user
+                    toast({ title: "Mencari Area...", description: "Mencoba mencari level Desa/Kecamatan..." });
+                    data = await fetchLocation(cleanedQuery);
+                }
             }
+
+            setSearchResults(data);
+
+            if (data.length === 0) {
+                toast({ title: "Tidak Ditemukan", description: "Coba kurangi detail (cukup Nama Desa & Kecamatan).", variant: "destructive" });
+            } else if (data.length === 1) {
+                // If only 1 result, auto select it for convenience
+                selectLocation(data[0]);
+            }
+
         } catch (error) {
+            console.error(error);
             toast({ title: "Error", description: "Gagal mencari lokasi", variant: "destructive" });
         } finally {
             setIsSearching(false);
