@@ -50,6 +50,36 @@ export default function Dashboard() {
     const [area, setArea] = useState('');
     const [loading, setLoading] = useState(false);
 
+    // Search State
+    const [searchQuery, setSearchQuery] = useState('');
+    const [searchResults, setSearchResults] = useState([]);
+    const [isSearching, setIsSearching] = useState(false);
+
+    const handleSearch = async () => {
+        if (!searchQuery) return;
+        setIsSearching(true);
+        try {
+            const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(searchQuery)}&limit=5`);
+            const data = await response.json();
+            setSearchResults(data);
+            if (data.length === 0) {
+                toast({ title: "Tidak Ditemukan", description: "Lokasi tidak ditemukan, coba nama lain.", variant: "destructive" });
+            }
+        } catch (error) {
+            toast({ title: "Error", description: "Gagal mencari lokasi", variant: "destructive" });
+        } finally {
+            setIsSearching(false);
+        }
+    };
+
+    const selectLocation = (result) => {
+        setLat(result.lat);
+        setLng(result.lon);
+        setSearchResults([]);
+        setSearchQuery(result.display_name);
+        toast({ title: "Lokasi Dipilih", description: result.display_name });
+    };
+
     // Custom Polygon State
     const [customPoints, setCustomPoints] = useState(null);
     const [calculatedArea, setCalculatedArea] = useState(null);
@@ -292,6 +322,37 @@ export default function Dashboard() {
                             <p className="text-xs text-muted-foreground">Auto-extracts Lat/Long from URL</p>
                         </div>
 
+                        <div className="space-y-2 relative">
+                            <Label>Cari Nama Lokasi</Label>
+                            <div className="flex gap-2">
+                                <Input
+                                    placeholder="Contoh: Monas, Jakarta"
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                    onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                                />
+                                <Button onClick={handleSearch} variant="secondary" disabled={isSearching}>
+                                    {isSearching ? <span className="animate-spin">⌛</span> : <Search className="w-4 h-4" />}
+                                </Button>
+                            </div>
+
+                            {/* Search Results Dropdown */}
+                            {searchResults.length > 0 && (
+                                <div className="absolute top-full left-0 right-0 z-50 bg-white border rounded-md shadow-lg max-h-60 overflow-y-auto mt-1">
+                                    {searchResults.map((result) => (
+                                        <div
+                                            key={result.place_id}
+                                            className="p-3 hover:bg-slate-100 cursor-pointer text-sm border-b last:border-0"
+                                            onClick={() => selectLocation(result)}
+                                        >
+                                            <p className="font-medium line-clamp-1">{result.display_name.split(',')[0]}</p>
+                                            <p className="text-xs text-muted-foreground line-clamp-2">{result.display_name}</p>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+
                         <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-2">
                                 <Label>Latitude</Label>
@@ -342,7 +403,7 @@ export default function Dashboard() {
                 <Card ref={mapContainerRef} className="lg:col-span-2 overflow-hidden h-[400px] sm:h-[500px] lg:h-auto relative min-h-[400px]">
                     <MapContainer center={mapCenter} zoom={13} style={{ height: "100%", width: "100%" }}>
                         <TileLayer
-                            attribution='&copy; <a href="https://www.google.com/intl/en-US_US/help/terms_maps.html">Google</a>'
+                            attribution='&copy; Google Maps Hybrid'
                             url="https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}"
                             maxZoom={22}
                         />
