@@ -9,7 +9,13 @@ import { CheckCircle2, Map, Zap, Shield, Loader2, Coins, Menu, X } from 'lucide-
 import { Helmet } from 'react-helmet-async';
 import { KABUPATEN_JAWA } from '@/data/locations';
 import { Badge } from '@/components/ui/badge';
-import { MONEY_KEYWORDS, TECHNICAL_KEYWORDS, PROFESSIONAL_KEYWORDS, LONG_TAIL_KEYWORDS } from '@/data/seo_keywords';
+import {
+    MONEY_KEYWORDS,
+    TECHNICAL_KEYWORDS,
+    PROFESSIONAL_KEYWORDS,
+    LONG_TAIL_KEYWORDS,
+    generateSchemaMarkup
+} from '@/data/seo_keywords';
 // import blogPosts from '@/data/blog_posts'; // Remove static import
 import { BookOpen } from 'lucide-react';
 import { Link } from 'react-router-dom';
@@ -71,13 +77,18 @@ export default function Landing() {
                 <title>Buat Polygon NIB OSS & Peta Tanah Online | SHP Generator Gratis - LineSima</title>
                 <meta name="description" content="Gagal upload peta di OSS? Buat file Polygon (.shp) untuk NIB dan Izin Lokasi (KKPR) secara instan. Cukup tempel Link Google Maps, langsung jadi file ZIP Shapefile siap upload. Coba gratis sekarang!" />
                 <meta name="keywords" content={[
-                    ...MONEY_KEYWORDS,
-                    ...TECHNICAL_KEYWORDS,
-                    ...PROFESSIONAL_KEYWORDS,
-                    ...LONG_TAIL_KEYWORDS,
+                    ...MONEY_KEYWORDS.map(k => k.keyword),
+                    ...TECHNICAL_KEYWORDS.map(k => k.keyword),
+                    ...PROFESSIONAL_KEYWORDS.map(k => k.keyword),
+                    ...LONG_TAIL_KEYWORDS.map(k => k.keyword),
                     ...KABUPATEN_JAWA.map(k => `jasa pembuatan polygon ${k.toLowerCase()}`)
                 ].join(', ')} />
                 <link rel="canonical" href="https://pembuatanpolygon.site/" />
+
+                {/* JSON-LD Schema Markup */}
+                <script type="application/ld+json">
+                    {JSON.stringify(generateSchemaMarkup("Pembuatan Polygon OSS", "Indonesia"))}
+                </script>
             </Helmet>
 
             {/* Navbar */}
